@@ -11,5 +11,9 @@ namespace alltrades_bot.Core.Options
         public string ConsumerKey { get; set; }
         
         public string ConsumerSecret { get; set; }
+
+        public string UserId { get; set; }
+
+        public string UserTimelineEndpoint { get; set; }
     }
 }

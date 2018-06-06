@@ -7,11 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using alltrades_bot.Core;
 using alltrades_bot.Core.Entities;
+using alltrades_bot.Core.Entities.Twitter;
 using alltrades_bot.DataAccess;
 
 namespace alltrades_bot.Business.Commands
 {
-    public class ShowTweetsCommand : BaseAsyncCommand<IList<string>>
+    public class ShowTweetsCommand : BaseAsyncCommand<IList<Tweet>>
     {
         private readonly ITwitterRepository _twitterRepository;
 
@@ -20,13 +21,11 @@ namespace alltrades_bot.Business.Commands
             _twitterRepository = twitterRepository;
         }
 
-        protected override async Task<IList<string>> ImplementExecute()
+        protected override async Task<IList<Tweet>> ImplementExecute()
         {
-            var authToken = await _twitterRepository.GetAccessToken();
+            var tweets = await _twitterRepository.GetTweets();
 
-            var tweetTexts = new List<string>();
-
-            return tweetTexts;
+            return tweets;
         }
     }
 }

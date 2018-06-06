@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using alltrades_bot.Core.Entities;
+using alltrades_bot.Core.Entities.Twitter;
 using alltrades_bot.Core.Options;
 using Microsoft.Extensions.Options;
 
@@ -62,6 +63,41 @@ namespace alltrades_bot.DataAccess
             var authToken = serializer.ReadObject(await response.Content.ReadAsStreamAsync()) as ITwitterAuth;
 
             return authToken;
+        }
+
+        public Task<List<Tweet>> GetTweets()
+        {
+            var endpoint = $"{_options.ApiBase}/{_options.UserTimelineEndpoint}?screen_name={_options.UserId}&count=200";
+
+            return CallTwitter<List<Tweet>>(endpoint);
+        }
+
+        private async Task<T> CallTwitter<T>(
+            string endpoint, 
+            HttpRequestMessage message = null)
+        {
+            var token = await GetAccessToken();
+
+            var httpClient = _httpClientFactory.CreateClient();
+
+            if (message == null)
+            {
+                message = new HttpRequestMessage(
+                    HttpMethod.Get, 
+                    endpoint);
+            }
+
+            message.Headers.Authorization = new AuthenticationHeaderValue(
+                token.token_type, 
+                token.access_token);
+
+            var serializer = new DataContractJsonSerializer(typeof(T));
+
+            var response = await httpClient.SendAsync(message);
+
+            var responseObject = serializer.ReadObject(await response.Content.ReadAsStreamAsync());
+
+            return (T)responseObject;
         }
     }
 }
