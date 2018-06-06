@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using alltrades_bot.Core.Options;
+using alltrades_bot.DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,6 +28,12 @@ namespace alltrades_bot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddHttpClient();
+
+            ConfigureSettings(services);
+
+            services.AddTransient<ITwitterRepository, TwitterRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +50,15 @@ namespace alltrades_bot
 
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        private void ConfigureSettings(IServiceCollection services)
+        {
+            services.Configure<TwitterOptions>(Configuration.GetSection(nameof(TwitterOptions)));
+            // ITwitterOptions twitterConfig = new TwitterOptions();
+            // Configuration.Bind(nameof(TwitterOptions), twitterConfig);
+
+            // services.AddSingleton(twitterConfig);
         }
     }
 }
