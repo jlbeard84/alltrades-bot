@@ -72,6 +72,19 @@ namespace alltrades_bot.DataAccess
             return CallTwitter<List<Tweet>>(endpoint);
         }
 
+        public Task<SearchResponse> GetMentions(
+            string sinceID = null)
+        {
+            var endpoint = $"{_options.ApiBase}/{_options.SearchTweetsEndpoint}?q=@{_options.UserId}&count=100&result_type=recent";
+
+            if (!string.IsNullOrWhiteSpace(sinceID))
+            {
+                endpoint = $"{endpoint}&since_id={sinceID}";
+            }
+
+            return CallTwitter<SearchResponse>(endpoint);
+        }
+
         private async Task<T> CallTwitter<T>(
             string endpoint, 
             HttpRequestMessage message = null)

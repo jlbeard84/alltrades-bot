@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using alltrades_bot.Core.Entities;
 using alltrades_bot.Core.Entities.Twitter;
@@ -12,5 +13,8 @@ namespace alltrades_bot.DataAccess
         Task<ITwitterAuth> GetAccessToken();
 
         Task<List<Tweet>> GetTweets();
+
+        Task<SearchResponse> GetMentions(
+            string sinceID = null);
     }
 }

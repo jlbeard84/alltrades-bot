@@ -15,5 +15,7 @@ namespace alltrades_bot.Core.Options
         public string UserId { get; set; }
 
         public string UserTimelineEndpoint { get; set; }
+
+        public string SearchTweetsEndpoint { get; set; }
     }
 }
