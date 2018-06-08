@@ -28,5 +28,16 @@ namespace alltrades_bot.Controllers
             
             return new OkObjectResult(returnObject);
         }
+
+        [HttpGet("Watch")]
+        public async Task<ActionResult<bool>> StartMentionWatch()
+        {
+            var command = new FireAndForgetMentionsCommand(
+                _twitterRepository);
+
+            var returnObject = await command.Execute();
+            
+            return new OkObjectResult(returnObject);
+        }
     }
 }
