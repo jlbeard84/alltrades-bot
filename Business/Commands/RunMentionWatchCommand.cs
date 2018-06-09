@@ -11,35 +11,42 @@ namespace alltrades_bot.Business.Commands
         private const int DelayMilliseconds = 60000;
 
         private readonly ITwitterRepository _twitterRepository;
-        private readonly string _lastID;
 
         public RunMentionWatchCommand(
-            ITwitterRepository twitterRepository,
-            string lastID = null)
+            ITwitterRepository twitterRepository)
         {
             _twitterRepository = twitterRepository;
-            _lastID = lastID;
         }
 
         protected override async Task<bool> ImplementExecute()
         {
             try
             {
-                var mentionTask = _twitterRepository
-                    .GetMentions(_lastID)
-                    .ContinueWith(async (Task<SearchResponse> searchResultTask) => {
+                var lastIdCommand = new ReadMaxIdCommand(
+                    _twitterRepository);
 
-                        var lastId = string.Empty;
+                var lastId = await lastIdCommand.Execute();
+
+                var mentionTask = _twitterRepository
+                    .GetMentions(lastId)
+                    .ContinueWith(async (Task<SearchResponse> searchResultTask) => {
 
                         if (searchResultTask.IsCompletedSuccessfully) {
                             var results = searchResultTask.Result;
 
                             if (results != null)
                             {
-                                lastId = results.search_metadata.max_id_str;
+                                var currentMaxFileId = results.search_metadata.max_id_str;
+
+                                var writeMaxIdCommand = new WriteMaxIdCommand(
+                                    currentMaxFileId,
+                                    _twitterRepository);
+                                
+                                await writeMaxIdCommand.Execute();
 
                                 var handleMentionsTask = new HandleMentionsCommand(
-                                    results.statuses);
+                                    results.statuses,
+                                    _twitterRepository);
 
                                 Task.Factory.StartNew(async () => {
                                     await handleMentionsTask.Execute();
@@ -50,13 +57,12 @@ namespace alltrades_bot.Business.Commands
                         await Task.Delay(DelayMilliseconds);
 
                         var command = new RunMentionWatchCommand(
-                            _twitterRepository,
-                            lastId);
+                            _twitterRepository);
 
                         await command.Execute();
                 });
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 //log somehow
                 return false;

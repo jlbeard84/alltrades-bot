@@ -16,5 +16,13 @@ namespace alltrades_bot.DataAccess
 
         Task<SearchResponse> GetMentions(
             string sinceID = null);
+
+        string GetMaxIdFileName();
+
+        string GetMaxIdFilePath();
+
+        Task<Tweet> SendTweet(
+            string text,
+            string responseID = null);
     }
 }

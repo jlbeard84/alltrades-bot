@@ -17,5 +17,13 @@ namespace alltrades_bot.Core.Options
         public string UserTimelineEndpoint { get; set; }
 
         public string SearchTweetsEndpoint { get; set; }
+
+        public string MaxIdFileName { get; set; }
+
+        public string UserAccessToken { get; set; }
+
+        public string UserAccessSecret { get; set; }
+
+        public string SendTweetEndpoint { get; set; }
     }
 }
