@@ -1,5 +1,7 @@
 using alltrades_bot.Core.Entities;
 using alltrades_bot.Core.Entities.Twitter;
+using alltrades_bot.Core.Options;
+using alltrades_bot.DataAccess;
 
 namespace alltrades_bot.Core
 {
@@ -7,9 +9,14 @@ namespace alltrades_bot.Core
     {
         protected readonly Tweet Tweet;
 
-        public BaseTwitterResponse(Tweet tweet)
+        protected readonly ITwitterOptions TwitterOptions;
+
+        public BaseTwitterResponse(
+            Tweet tweet,
+            ITwitterOptions twitterOptions)
         {
             Tweet = tweet;
+            TwitterOptions = twitterOptions;
         }
 
         protected abstract ITwitterResponseMessage ImplementRespond();

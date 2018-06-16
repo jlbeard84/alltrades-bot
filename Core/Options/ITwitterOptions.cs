@@ -25,5 +25,7 @@ namespace alltrades_bot.Core.Options
         string UserAccessSecret { get; set; }
 
         string SendTweetEndpoint { get; set; }
+
+        string CommandLink { get; set; }
     }
 }

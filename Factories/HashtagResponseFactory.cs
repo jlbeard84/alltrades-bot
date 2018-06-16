@@ -4,11 +4,21 @@ using alltrades_bot.Business.Responses;
 using alltrades_bot.Core;
 using alltrades_bot.Core.Entities;
 using alltrades_bot.Core.Entities.Twitter;
+using alltrades_bot.Core.Options;
+using alltrades_bot.DataAccess;
 
 namespace alltrades_bot.Factories
 {
     public class HashtagResponseFactory : IHashtagResponseFactory
     {
+        private readonly ITwitterOptions _options;
+
+        public HashtagResponseFactory(
+            ITwitterOptions options)
+        {
+            _options = options;
+        }
+
         public List<ITwitterResponseMessage> Generate(Tweet tweet)
         {
             var responseCommands = new List<BaseTwitterResponse>();
@@ -19,37 +29,51 @@ namespace alltrades_bot.Factories
 
             if (!tweet.truncated.HasValue || !tweet.truncated.Value)
             {
-                hashtags.AddRange(tweet
+                var tags = tweet
                     ?.entities
                     ?.hashtags
-                    ?.Select(ht => ht.text));
+                    ?.Select(ht => ht.text);
+
+                hashtags.AddRange(tags);
             }
             else 
             {
-                hashtags.AddRange(tweet
+                var tags = tweet
                     ?.extended_tweet
                     ?.entities
                     ?.hashtags
-                    ?.Select(ht => ht.text));
+                    ?.Select(ht => ht.text);
+
+                hashtags.AddRange(tags);
             }
+
+            hashtags = hashtags
+                .Distinct()
+                .ToList();
 
             foreach(var hashtag in hashtags)
             {
                 switch(hashtag)
                 {
                     case "roll":
-                        responseCommands.Add(new RollResponse(tweet));
+                        responseCommands.Add(new RollResponse(
+                            tweet,
+                            _options));
                         break;
 
                     default: 
-                        responseCommands.Add(new UnknownResponse(tweet));
+                        responseCommands.Add(new UnknownResponse(
+                            tweet,
+                            _options));
                         break;
                 }
             }
 
             if (!responseCommands.Any())
             {
-                responseCommands.Add(new DefaultResponse(tweet));
+                responseCommands.Add(new DefaultResponse(
+                    tweet,
+                    _options));
             }
 
             foreach(var response in responseCommands)

@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using alltrades_bot.Core;
 using alltrades_bot.Core.Entities;
 using alltrades_bot.Core.Entities.Twitter;
+using alltrades_bot.Core.Options;
+using alltrades_bot.DataAccess;
 
 namespace alltrades_bot.Business.Responses
 {
@@ -18,8 +20,12 @@ namespace alltrades_bot.Business.Responses
         private const int DefaultDieNum = 1;
         private const int DefaultDieType = 6;
 
-        public RollResponse(Tweet tweet)
-            : base(tweet)
+        public RollResponse(
+            Tweet tweet,
+            ITwitterOptions twitterOptions)
+            : base(
+                tweet,
+                twitterOptions) 
         { }
 
         protected override ITwitterResponseMessage ImplementRespond()
