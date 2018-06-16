@@ -80,8 +80,8 @@ namespace alltrades_bot.DataAccess {
         }
 
         public Task<Tweet> SendTweet (
-            string text,
-            string responseID = null) {
+            ITwitterResponseMessage responseMessage) 
+        {
             var endpoint = $"{_options.ApiBase}/{_options.SendTweetEndpoint}";
 
             var message = new HttpRequestMessage (
@@ -89,13 +89,13 @@ namespace alltrades_bot.DataAccess {
                 endpoint);
 
             var body = new List<KeyValuePair<string, string>> {
-                    new KeyValuePair<string, string> ("status", text)
+                    new KeyValuePair<string, string> ("status", responseMessage.Message)
                 };
 
-            if (!string.IsNullOrWhiteSpace (responseID)) {
+            if (!string.IsNullOrWhiteSpace (responseMessage.ResponseID)) {
                 body.Add (new KeyValuePair<string, string> (
                     "in_reply_to_status_id",
-                    responseID));
+                    responseMessage.ResponseID));
             }
 
             message.Content = new FormUrlEncodedContent (body);

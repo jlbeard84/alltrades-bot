@@ -20,7 +20,6 @@ namespace alltrades_bot.DataAccess {
         string GetMaxIdFilePath ();
 
         Task<Tweet> SendTweet (
-            string text,
-            string responseID = null);
+            ITwitterResponseMessage responseMessage);
     }
 }

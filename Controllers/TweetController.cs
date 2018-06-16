@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using alltrades_bot.Business.Commands;
 using alltrades_bot.DataAccess;
+using alltrades_bot.Factories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace alltrades_bot.Controllers
@@ -11,11 +12,14 @@ namespace alltrades_bot.Controllers
     public class TweetController
     {
         private readonly ITwitterRepository _twitterRepository;
+        private readonly IHashtagResponseFactory _hashtagResponseFactory;
 
         public TweetController(
-            ITwitterRepository twitterRepository) 
+            ITwitterRepository twitterRepository,
+            IHashtagResponseFactory hashtagResponseFactory) 
         {
             _twitterRepository = twitterRepository;
+            _hashtagResponseFactory = hashtagResponseFactory;
         }
 
         [HttpGet]
@@ -33,7 +37,8 @@ namespace alltrades_bot.Controllers
         public async Task<ActionResult<bool>> StartMentionWatch()
         {
             var command = new FireAndForgetMentionsCommand(
-                _twitterRepository);
+                _twitterRepository,
+                _hashtagResponseFactory);
 
             var returnObject = await command.Execute();
             

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using alltrades_bot.Core.Options;
 using alltrades_bot.DataAccess;
+using alltrades_bot.Factories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,6 +35,7 @@ namespace alltrades_bot
             ConfigureSettings(services);
 
             services.AddTransient<ITwitterRepository, TwitterRepository>();
+            services.AddTransient<IHashtagResponseFactory, HashtagResponseFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

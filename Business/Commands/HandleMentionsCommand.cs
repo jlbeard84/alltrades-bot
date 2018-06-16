@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using alltrades_bot.Core;
 using alltrades_bot.Core.Entities.Twitter;
 using alltrades_bot.DataAccess;
+using alltrades_bot.Factories;
 
 namespace alltrades_bot.Business.Commands
 {
@@ -11,32 +12,39 @@ namespace alltrades_bot.Business.Commands
     {
         private readonly ITwitterRepository _twitterRepository;
 
+        private readonly IHashtagResponseFactory _hashtagResponseFactory;
+
         private readonly List<Tweet> _tweets;
 
         public HandleMentionsCommand(
             List<Tweet> tweets,
-            ITwitterRepository twitterRepository)
+            ITwitterRepository twitterRepository,
+            IHashtagResponseFactory hashtagResponseFactory)
             {
                 _tweets = tweets;
                 _twitterRepository = twitterRepository;
+                _hashtagResponseFactory = hashtagResponseFactory;
             }
 
         protected override async Task<bool> ImplementExecute()
         {
             foreach(var tweet in _tweets)
             {
-                try
-                {
-                    var message = $"Hey @{tweet.user.screen_name}, thanks for the message! Right now I can't do much, but stay tuned for updates!";
+                var responseMessages = _hashtagResponseFactory
+                        .Generate(tweet);
 
-                    await _twitterRepository.SendTweet(
-                        message,
-                        tweet.id_str);
-                }
-                catch(Exception)
+                foreach(var responseMessage in responseMessages)
                 {
-                    //TODO: queue this for later
-                    Console.WriteLine($"Failed to write response to {tweet.id_str}");
+                    try
+                    {
+                        await _twitterRepository.SendTweet(
+                            responseMessage);
+                    }
+                    catch(Exception)
+                    {
+                        //TODO: queue this for later
+                        Console.WriteLine($"Failed to write response to {tweet.id_str}");
+                    }
                 }
             }
 

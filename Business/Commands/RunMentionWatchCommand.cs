@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using alltrades_bot.Core;
 using alltrades_bot.Core.Entities.Twitter;
 using alltrades_bot.DataAccess;
+using alltrades_bot.Factories;
 
 namespace alltrades_bot.Business.Commands
 {
@@ -12,10 +13,14 @@ namespace alltrades_bot.Business.Commands
 
         private readonly ITwitterRepository _twitterRepository;
 
+        private readonly IHashtagResponseFactory _hashtagResponseFactory;
+
         public RunMentionWatchCommand(
-            ITwitterRepository twitterRepository)
+            ITwitterRepository twitterRepository,
+            IHashtagResponseFactory hashtagResponseFactory)
         {
             _twitterRepository = twitterRepository;
+            _hashtagResponseFactory = hashtagResponseFactory;
         }
 
         protected override async Task<bool> ImplementExecute()
@@ -46,7 +51,8 @@ namespace alltrades_bot.Business.Commands
 
                                 var handleMentionsTask = new HandleMentionsCommand(
                                     results.statuses,
-                                    _twitterRepository);
+                                    _twitterRepository,
+                                    _hashtagResponseFactory);
 
                                 Task.Factory.StartNew(async () => {
                                     await handleMentionsTask.Execute();
@@ -57,7 +63,8 @@ namespace alltrades_bot.Business.Commands
                         await Task.Delay(DelayMilliseconds);
 
                         var command = new RunMentionWatchCommand(
-                            _twitterRepository);
+                            _twitterRepository,
+                            _hashtagResponseFactory);
 
                         await command.Execute();
                 });
