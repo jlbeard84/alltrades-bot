@@ -6,6 +6,7 @@ using alltrades_bot.Core.Entities;
 using alltrades_bot.Core.Entities.Twitter;
 using alltrades_bot.Core.Options;
 using alltrades_bot.DataAccess;
+using Microsoft.Extensions.Options;
 
 namespace alltrades_bot.Factories
 {
@@ -14,9 +15,9 @@ namespace alltrades_bot.Factories
         private readonly ITwitterOptions _options;
 
         public HashtagResponseFactory(
-            ITwitterOptions options)
+            IOptions<TwitterOptions> options)
         {
-            _options = options;
+            _options = options.Value;
         }
 
         public List<ITwitterResponseMessage> Generate(Tweet tweet)
